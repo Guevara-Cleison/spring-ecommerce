@@ -15,7 +15,7 @@ public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	private String nombre;
 
@@ -32,11 +32,11 @@ public class Usuario {
 	private String password;
 	
 	
-	//RELACION DE UNO A MUCHOS PRODUCTOS
+	//RELACION DE UN USUARIO A MUCHOS PRODUCTOS
 	@OneToMany(mappedBy = "usuario")
 	private List<Producto> productos;
 	
-	//RELACION DE UNO A MUCHAS ORDENES
+	//RELACION DE UN USUARIO A MUCHAS ORDENES
 	@OneToMany(mappedBy = "usuario")
 	private List<Orden> ordenens;
 	
@@ -45,7 +45,7 @@ public class Usuario {
 	public Usuario() {
 	}
 
-	public Usuario(int id, String nombre, String username, String email, String direccion, String telefono, String tipo,
+	public Usuario(Integer id, String nombre, String username, String email, String direccion, String telefono, String tipo,
 			String password) {
 		this.id = id;
 		this.nombre = nombre;
@@ -66,11 +66,11 @@ public class Usuario {
 				+ "]";
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

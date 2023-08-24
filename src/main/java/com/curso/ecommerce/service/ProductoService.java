@@ -9,11 +9,11 @@ public interface ProductoService {
 	
 	public Producto save(Producto producto);
 	
-	public Optional<Producto> get(int id);
+	public Optional<Producto> get(Integer id);
 	
 	public void update(Producto producto);
 	
-	public void delete(int id);
+	public void delete(Integer id);
 	
 	public List<Producto> findAll();
 
