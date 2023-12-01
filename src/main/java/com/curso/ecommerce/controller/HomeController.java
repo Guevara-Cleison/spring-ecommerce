@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.curso.ecommerce.model.DetalleOrden;
 import com.curso.ecommerce.model.Orden;
 import com.curso.ecommerce.model.Producto;
+import com.curso.ecommerce.model.Usuario;
+import com.curso.ecommerce.service.IUsuarioService;
 import com.curso.ecommerce.service.ProductoService;
 
 @Controller
@@ -28,6 +30,9 @@ public class HomeController {
 	
 	@Autowired
 	private ProductoService productoService;
+	
+	@Autowired
+	private IUsuarioService iUsuarioService;
 	
 	//Para_almacenar_los_detalles_de_las_orden
 	List<DetalleOrden> detalles = new ArrayList<DetalleOrden>();
@@ -73,7 +78,13 @@ public class HomeController {
 		detalleOrden.setTotal(producto.getPrecio()*cantidad);
 		detalleOrden.setProducto(producto);
 		
+		//Validar_que_el_producto_no_se_añada_dos_veces
+		Integer idProducto = producto.getId();
+		boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
+		
+		if(!ingresado) {
 		detalles.add(detalleOrden);
+		}
 		
 		//Suma_total_de_los_productos
 		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
@@ -108,6 +119,26 @@ public class HomeController {
 		model.addAttribute("orden", orden);
 		
 		return "usuario/carrito";
+	}
+	
+	@GetMapping("/getCart")
+	public String getCart(Model model) {
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		
+		return "usuario/carrito";
+	}
+	
+	@GetMapping("/order")
+	public String order(Model model) {
+		
+		Usuario usuario = iUsuarioService.findById(1).get();
+		
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		model.addAttribute("usuario", usuario);
+		
+		return "usuario/resumenorden";
 	}
 	
 	
