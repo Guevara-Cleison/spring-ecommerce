@@ -3,6 +3,8 @@ package com.curso.ecommerce.controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.curso.ecommerce.model.Producto;
 import com.curso.ecommerce.model.Usuario;
+import com.curso.ecommerce.service.IUsuarioService;
 import com.curso.ecommerce.service.ProductoService;
 import com.curso.ecommerce.service.UploadFileService;
 
@@ -32,6 +35,9 @@ public class ProductoController {
 	@Autowired
 	private UploadFileService upload;
 	
+	@Autowired
+	private IUsuarioService usuarioService; 
+	
 	@GetMapping("")
 	public String show(Model model) {
 		model.addAttribute("productos", productoService.findAll());
@@ -44,10 +50,11 @@ public class ProductoController {
 	}
 	
 	@PostMapping("/save")
-	public String save(Producto producto,@RequestParam("img") MultipartFile file) throws IOException {
+	public String save(Producto producto,@RequestParam("img") MultipartFile file, HttpSession session) throws IOException {
 		//IMPLEMENTACION DE LOGGER
-		LOGGER.info("Este es el objeto producto {}", producto);
-		Usuario u = new Usuario(1, "", "", "", "", "", "", "");
+		LOGGER.info("Este es el objeto producto: {}", producto);
+		//OBTIENE EL USUARIO DE LA SESION
+		Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString()) ).get();
 		producto.setUsuario(u);
 		
 		//SUBIR LA IMAGEN
@@ -69,7 +76,7 @@ public class ProductoController {
 		Optional<Producto> optionalProducto = productoService.get(id);
 		producto = optionalProducto.get();
 		
-		LOGGER.info("Producto encontrado : {}", producto);
+		//LOGGER.info("Producto encontrado : {}", producto);
 		model.addAttribute("producto", producto);
 		return "productos/edit";
 	}
@@ -106,7 +113,7 @@ public class ProductoController {
 		Producto p = new Producto();
 		p= productoService.get(id).get();
 		
-		if (!p.getImagen().equals("default.jpg")) { //ELIMINAR CUANDO SEA LÑA IMAGEN POR DEFECTO
+		if (!p.getImagen().equals("default.jpg")) { //ELIMINAR CUANDO SEA LA IMAGEN POR DEFECTO
 			upload.deleteImage(p.getImagen());
 		}
 		

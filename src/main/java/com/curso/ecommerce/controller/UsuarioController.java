@@ -35,7 +35,7 @@ public class UsuarioController {
 	@PostMapping("/save")
 	public String save(Usuario usuario) {
 		
-		LOGGER.info("Usuario registro: {} " ,usuario);
+		//LOGGER.info("Usuario registro: {} " ,usuario);
 		usuario.setTipo("USER");
 		
 		usuarioService.save(usuario);
@@ -52,7 +52,7 @@ public class UsuarioController {
 	
 	@PostMapping("/acceder")
 	public String acceder(Usuario usuario, HttpSession session) {
-		LOGGER.info("Accesos : {} ", usuario);
+		//LOGGER.info("Accesos : {} ", usuario);
 		
 		Optional<Usuario> user = usuarioService.findByEmail(usuario.getEmail());
 		//LOGGER.info("USUARIO OBTENIDO: {} ", user.get());

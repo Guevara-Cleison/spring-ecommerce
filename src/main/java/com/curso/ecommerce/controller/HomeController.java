@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,9 @@ public class HomeController {
 	Orden orden = new Orden();
 	
 	@GetMapping("")
-	public String home(Model model) {
+	public String home(Model model, HttpSession session) {
+		
+		LOGGER.info("Sesion ----------------- del usuario: {} ", session.getAttribute("idusuario"));
 		
 		model.addAttribute("productos", productoService.findAll());
 		
@@ -61,7 +65,7 @@ public class HomeController {
 	//MOSTRAR PRODUCTO EN LA VISTA PRODUCTOHOME
 	@GetMapping("/productohome/{id}")
 	public String productoHome(@PathVariable Integer id, Model model) {
-		LOGGER.info("ID producto enviado como paramaetro {}", id);
+		//LOGGER.info("ID producto enviado como paramaetro: {}", id);
 		Producto producto = new Producto();
 		Optional<Producto> productoOptional = productoService.get(id);
 		producto = productoOptional.get();
@@ -79,8 +83,8 @@ public class HomeController {
 		double sumaTotal = 0;
 		
 		Optional<Producto> optionalProducto = productoService.get(id);
-		LOGGER.info("Producto añadido: {}", optionalProducto.get());
-		LOGGER.info("Cantidad: {}", cantidad);
+		//LOGGER.info("Producto añadido: {}", optionalProducto.get());
+		//LOGGER.info("Cantidad: {}", cantidad);
 		//Obtenemos_el_producto
 		producto = optionalProducto.get();
 		
@@ -144,9 +148,9 @@ public class HomeController {
 	
 	//ENVIAR Y MOSTRAR LA PAGINA DE RESUMEN DE LA ORDEN
 	@GetMapping("/order")
-	public String order(Model model) {
-		
-		Usuario usuario = usuarioService.findById(1).get();
+	public String order(Model model, HttpSession session) {
+		//OBTIENE EL USUARIO DE LA SESION
+		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
 		
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
@@ -157,13 +161,13 @@ public class HomeController {
 	
 	//METODO PARA GUARDAR LA ORDEN
 	@GetMapping("/saveOrder")
-	public String saveOrder() {
+	public String saveOrder(HttpSession session) {
 		Date fechaCreacion = new Date();
 		orden.setFechaCreacion(fechaCreacion);
 		orden.setNumero(ordenService.generarNumeroOrden());
 		
-		//usuario_
-		Usuario usuario = usuarioService.findById(1).get();
+		//OBTIENE EL USUARIO DE LA SESION
+		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
 		
 		orden.setUsuario(usuario);
 		ordenService.save(orden);
@@ -184,7 +188,7 @@ public class HomeController {
 	//METODO PARA BUSCAR UN PRODUCTO
 	@PostMapping("/search")
 	public String searchProduct(@RequestParam String nombre, Model model ) {
-		LOGGER.info("Nombre del producto: {} ", nombre);
+		//LOGGER.info("Nombre del producto: {} ", nombre);
 		List<Producto> productos = productoService.findAll().stream()
 				.filter(p -> p.getNombre().contains(nombre)).collect(Collectors.toList());
 		model.addAttribute("productos", productos);
