@@ -5,7 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -24,8 +23,8 @@ public class DetalleOrden {
 	
 	private double total;
 	
-	//RELACION DE UN DETALLE A UNA ORDEN
-	@OneToOne
+	//RELACION DE MUCHOS DETALLES A UNA ORDEN
+	@ManyToOne
 	private Orden orden;
 	
 	//RELACION DE MUCHOS DETALLES A UN PRODUCTO
