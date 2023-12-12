@@ -10,7 +10,7 @@ import com.curso.ecommerce.model.Producto;
 import com.curso.ecommerce.repositorio.IProductoRepository;
 
 @Service
-public class PorductoServiceImpl implements ProductoService{
+public class PorductoServiceImpl implements IProductoService{
 	
 	@Autowired
 	private IProductoRepository productoRepository;

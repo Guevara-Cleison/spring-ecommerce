@@ -6,17 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.curso.ecommerce.model.Orden;
 import com.curso.ecommerce.model.Producto;
-import com.curso.ecommerce.service.ProductoService;
+import com.curso.ecommerce.service.IOrdenService;
+import com.curso.ecommerce.service.IUsuarioService;
+import com.curso.ecommerce.service.IProductoService;
 
 @Controller
 @RequestMapping("/administrador")
 public class AdministradorController {
 	
 	@Autowired
-	private ProductoService productoService;
+	private IProductoService productoService;
+	
+	@Autowired
+	private IUsuarioService usuarioService;
+	
+	@Autowired
+	private IOrdenService ordenService;
 	
 	@GetMapping("")
 	public String home(Model model) {
@@ -25,6 +35,36 @@ public class AdministradorController {
 		model.addAttribute("productos", productos);
 		
 		return "administrador/home";
+	}
+	
+	//MOSTRAR LOS USUARIOS
+	@GetMapping("/usuarios")
+	public String usuarios(Model model) {
+		
+		model.addAttribute("usuarios", usuarioService.findAll());
+		
+		return "administrador/usuarios";
+	}
+	
+	//MOSTRAR LAS ORDENES PARA EL ADMINISTRADOR
+	@GetMapping("/ordenes")
+	public String ordenes(Model model) {
+		
+		model.addAttribute("ordenes", ordenService.findAll() );
+		
+		return "administrador/ordenes";
+	}
+	
+	//MOSTRAR DETALLES DE LA ORDEN
+	@GetMapping("/detalle/{id}")
+	public String detalle(@PathVariable Integer id, Model model) {
+		
+		//JPA NOS PERMITE TRAER LOS DETALLES A TRAVES DE LA ORDEN GRACIAS A LA RELACION DE ENTIDADES
+		Orden orden = ordenService.findById(id).get();
+		
+		model.addAttribute("detalles", orden.getDetalle() );
+		
+		return "administrador/detalleorden";
 	}
 
 }

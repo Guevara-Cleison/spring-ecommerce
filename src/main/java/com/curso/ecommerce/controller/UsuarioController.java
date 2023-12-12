@@ -8,9 +8,11 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,7 +30,10 @@ public class UsuarioController {
 	@Autowired
 	private IUsuarioService usuarioService;
 	
-	@Autowired IOrdenService ordenService;
+	@Autowired
+	private IOrdenService ordenService;
+	
+	BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	
 	//MOSTRAR PAGINA REGISTRO
 	@GetMapping("/registro")
@@ -43,7 +48,7 @@ public class UsuarioController {
 		
 		//LOGGER.info("Usuario registro: {} " ,usuario);
 		usuario.setTipo("USER");
-		
+		usuario.setPassword(passwordEncoder.encode(usuario.getPassword()) );
 		usuarioService.save(usuario);
 		
 		return "redirect:/";
@@ -56,11 +61,12 @@ public class UsuarioController {
 		return "usuario/login";
 	}
 	
-	@PostMapping("/acceder")
+	//PARA IDENTIFICAR QUE TIPO DE USUARIO ES
+	@GetMapping("/acceder")
 	public String acceder(Usuario usuario, HttpSession session) {
 		//LOGGER.info("Accesos : {} ", usuario);
 		
-		Optional<Usuario> user = usuarioService.findByEmail(usuario.getEmail());
+		Optional<Usuario> user = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString() ) );
 		//LOGGER.info("USUARIO OBTENIDO: {} ", user.get());
 		
 		//
@@ -78,6 +84,7 @@ public class UsuarioController {
 		return "redirect:/";
 	}
 	
+	//MOSTRAR LAS COMPRAS DEL USUARIO
 	@GetMapping("/compras")
 	public String obtenerCompras(Model model ,HttpSession session) {
 		model.addAttribute("sesion", session.getAttribute("idusuario"));
@@ -90,5 +97,31 @@ public class UsuarioController {
 		
 		return "usuario/compras";
 	}
+	
+	
+	//MOSTRAR LAS COMPRAS DEL USUARIO
+	@GetMapping("/detalle/{id}")
+	public String detalleCompra(@PathVariable Integer id, HttpSession session, Model model) {
+		LOGGER.info("ID de la orden: {}", id);
+		
+		Optional<Orden> orden = ordenService.findById(id);
+		//JPA NOS PERMITE TRAER LOS DETALLES A TRAVES DE LA ORDEN GRACIAS A LA RELACION DE ENTIDADES
+		model.addAttribute("detalles", orden.get().getDetalle() );
+		
+		//SESSION
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
+		
+		return "usuario/detalleCompra";
+	}
+	
+	//CERRA SESSION
+	@GetMapping("/cerrar")
+	public String cerrarSesion(HttpSession session) {
+		
+		session.removeAttribute("idusuario");
+		
+		return "redirect:/";
+	}
+	
 	
 }

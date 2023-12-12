@@ -26,7 +26,7 @@ import com.curso.ecommerce.model.Usuario;
 import com.curso.ecommerce.service.IDetalleOrdenService;
 import com.curso.ecommerce.service.IOrdenService;
 import com.curso.ecommerce.service.IUsuarioService;
-import com.curso.ecommerce.service.ProductoService;
+import com.curso.ecommerce.service.IProductoService;
 
 @Controller
 @RequestMapping("/")
@@ -35,7 +35,7 @@ public class HomeController {
 	private final Logger LOGGER= LoggerFactory.getLogger(HomeController.class);
 	
 	@Autowired
-	private ProductoService productoService;
+	private IProductoService productoService;
 	
 	@Autowired
 	private IUsuarioService usuarioService;
@@ -78,7 +78,7 @@ public class HomeController {
 		return "usuario/productohome";
 	}
 	
-	//METODO PARAAGREGAR PRODUCTOS AL CARRITO
+	//METODO PARA AGREGAR PRODUCTOS AL CARRITO
 	@PostMapping("/cart")
 	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model ) {
 		DetalleOrden detalleOrden = new DetalleOrden();
